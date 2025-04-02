@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Records - SRM AP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: transparent !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(30, 60, 114, 0.9) !important;
+        }
+
+        .navbar-brand {
+            background: none !important;
+            padding: 0;
+        }
+
+        .navbar-brand img {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+        }
+
+        .navbar-brand img:hover {
+            transform: rotate(360deg);
+        }
+
+        .nav-link {
+            color: #f0f4ff !important;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #ff6f61 !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            background: #ff6f61;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.4s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 70%;
+        }
+
+        /* Attendance Section */
+        .attendance-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .attendance-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1516321318423-9b5e339d0b32?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+            opacity: 0.15;
+            z-index: -1;
+            animation: zoomInOut 20s infinite;
+        }
+
+        .attendance-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 111, 97, 0.1), rgba(42, 82, 152, 0.4));
+            z-index: -1;
+        }
+
+        .attendance-container {
+            max-width: 90vw;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 111, 97, 0.3);
+        }
+
+        .attendance-container h2 {
+            font-family: 'Roboto Slab', serif;
+            font-size: 2.8rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(90deg, #ff6f61, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textGlow 3s infinite alternate;
+        }
+
+        /* Table Styling */
+        .table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            animation: fadeIn 2s ease-out;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        thead {
+            background: linear-gradient(90deg, #ff6f61, #ffd700);
+            color: #1e3c72;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        th, td {
+            padding: 20px;
+            text-align: center;
+            border: none;
+            font-size: 1.1rem;
+        }
+
+        th {
+            position: relative;
+            z-index: 1;
+        }
+
+        th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        tbody tr {
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(240, 244, 255, 0.95);
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, rgba(255, 111, 97, 0.2), rgba(255, 215, 0, 0.2));
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        td {
+            color: #1e3c72;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        tbody tr:hover td {
+            color: #ff6f61;
+        }
+
+        .status-present {
+            color: #28a745;
+            font-weight: 600;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 20px;
+            padding: 5px 15px;
+            display: inline-block;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: 600;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 20px;
+            padding: 5px 15px;
+            display: inline-block;
+        }
+
+        /* Button Styling */
+        .email-btn {
+            display: block;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, #ff6f61, #ffd700);
+            color: #1e3c72;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .email-btn:hover {
+            background: linear-gradient(90deg, #ffd700, #ff6f61);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .email-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Status Message */
+        #emailStatus {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #emailStatus.show {
+            opacity: 1;
+        }
+
+        /* Particle Background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(70px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 10px rgba(255, 111, 97, 0.5); }
+            100% { text-shadow: 0 0 20px rgba(255, 111, 97, 0.8); }
+        }
+
+        @keyframes zoomInOut {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 111, 97, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        }
+
+        .attendance-container:hover {
+            animation: glowPulse 1.5s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .attendance-container {
+                max-width: 90%;
+            }
+
+            .attendance-container h2 {
+                font-size: 2rem;
+            }
+
+            th, td {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .status-present, .status-absent {
+                padding: 3px 10px;
+                font-size: 0.85rem;
+            }
+
+            .email-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/static/srmlogo1.png" alt="SRM AP Logo" class="d-inline-block align-text-top">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/attendance">Attendance</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/scan">Scan & Mark</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Attendance Section -->
+    <section class="attendance-section">
+        <div id="particles-js"></div>
+        <div class="attendance-container">
+            <h2>Today's Attendance</h2>
+            <p id="currentDateTime" class="text-center"></p>
+            <table class="table mt-3">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Timestamp</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTable">
+                    <!-- Data will be inserted here dynamically -->
+                </tbody>
+            </table>
+            <button class="email-btn" id="sendEmailsBtn">Send Absentee Emails</button>
+            <p id="emailStatus"></p>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        // Particles.js Configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#ffd700' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#ff6f61', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Fetch and Display Attendance Data
+        function fetchAttendance() {
+            fetch('/attendance_data')
+                .then(response => response.json())
+                .then(data => {
+                    const attendanceTable = document.getElementById('attendanceTable');
+                    attendanceTable.innerHTML = '';
+                    data.forEach(record => {
+                        const statusClass = record.Status.toLowerCase() === 'present' ? 'status-present' : 'status-absent';
+                        attendanceTable.innerHTML += `
+                            <tr>
+                                <td>${record.Name}</td>
+                                <td>${record.Email}</td>
+                                <td>${record.Timestamp}</td>
+                                <td class="${statusClass}">${record.Status}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance data:', error);
+                    alert('Failed to load attendance data. Please try again.');
+                });
+        }
+
+        // Update Date and Time
+        function updateDateTime() {
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString();
+            const formattedTime = now.toLocaleTimeString();
+            document.getElementById('currentDateTime').innerText = `Date: ${formattedDate} | Time: ${formattedTime}`;
+        }
+
+        // Send Absentee Emails
+        document.getElementById('sendEmailsBtn').addEventListener('click', () => {
+            const statusP = document.getElementById('emailStatus');
+            statusP.textContent = 'Sending emails...';
+            statusP.classList.add('show');
+            statusP.style.color = '#ffd700';
+
+            fetch('/send_absentee_emails', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    statusP.style.color = '#28a745';
+                    statusP.textContent = data.message;
+                } else {
+                    statusP.style.color = '#dc3545';
+                    statusP.textContent = data.message;
+                }
+                setTimeout(() => statusP.classList.remove('show'), 5000); // Hide after 5s
+            })
+            .catch(error => {
+                statusP.style.color = '#dc3545';
+                statusP.textContent = 'Error sending emails';
+                console.error('Error:', error);
+                setTimeout(() => statusP.classList.remove('show'), 5000);
+            });
+        });
+
+        // Fetch attendance when page loads and update every 5 seconds
+        setInterval(updateDateTime, 1000); // Update time every second
+        fetchAttendance();
+        setInterval(fetchAttendance, 5000); // Refresh attendance data every 5 seconds
+    </script>
+</body>
+</html>
