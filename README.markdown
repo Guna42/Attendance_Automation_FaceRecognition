@@ -41,18 +41,22 @@ SRM AP automates attendance at SRM University AP using advanced face recognition
 ## 📸 Screenshots
 
 **Login Page**  
+
 ![Login Page](screenshots/Login.png)  
 <br><br>
 
 **Home Page**  
+
 ![Home Page](screenshots/home.png)  
 <br><br>
 
 **Scan & Mark**  
+
 ![Scan & Mark](screenshots/detect%20(1).png)  
 <br><br>
 
-**Attendance**  
+**Attendance** 
+
 ![Attendance](screenshots/check%26mail.png)
 
 ---
