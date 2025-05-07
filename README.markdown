@@ -39,7 +39,6 @@ SRM AP automates attendance at SRM University AP using advanced face recognition
 ---
 
 ## 📸 Screenshots
-Explore the system’s interface with the screenshots below, located in the `screenshots/` folder.
 
 **Login Page**  
 ![Login Page](screenshots/Login.png)  
